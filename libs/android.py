@@ -39,7 +39,7 @@ class Android:
             cmd = shlex.split(cmd)
         cmd = ['adb', '-s', self.serial, 'wait-for-device'] + [str(a) for a in cmd]
         logging.debug(f'ADB call: {shlex.join(cmd)}')
-        out = subprocess.check_output(cmd, text=text, shell=True, timeout=timeout, **kwargs)
+        out = subprocess.check_output(cmd, text=text, timeout=timeout, **kwargs)
         return out.rstrip('\n') if text else out
 
     def root(self):
@@ -49,7 +49,7 @@ class Android:
             logging.warning('Rooting the device process may have failed')
 
     def pull(self, src, dst, timeout=600):
-        process = subprocess.Popen(['adb', '-s', self.serial, 'wait-for-device', 'pull', src, dst], shell=True, text=True,
+        process = subprocess.Popen(['adb', '-s', self.serial, 'wait-for-device', 'pull', src, dst], text=True,
                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = process.communicate(timeout=timeout)
         if process.poll() == 1 and 'No such file or directory' in out:

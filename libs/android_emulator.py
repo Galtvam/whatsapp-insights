@@ -24,7 +24,7 @@ class AndroidEmulator:
     ANDROID_HOME = os.environ.get('ANDROID_HOME')
     AVD_MANAGER = os.environ.get('AVD_MANAGER')
     EMULATOR = None
-    DEFAULT_ARGS = ['-no-boot-anim', '-netfast', '-delay-adb', '-writable-system']
+    DEFAULT_ARGS = ['-no-boot-anim', '-netfast', '-delay-adb', '-writable-system', '-noaudio', '-gpu', 'off', '-no-accel']
 
     def __init__(self, name, show_window=True, port=None):
         window_flag = ['-no-window'] if not show_window else []
@@ -61,7 +61,7 @@ class AndroidEmulator:
         cmd = [AndroidEmulator.avd_manager(), '-v', 'create', 'avd', '--name', name, 
                '--package', package, '--device', device]
         cmd = cmd + force_flag + abi
-        proc = subprocess.Popen(cmd, shell=True)
+        proc = subprocess.Popen(cmd)
         proc.wait(timeout)
         
         if proc.poll() != 0:

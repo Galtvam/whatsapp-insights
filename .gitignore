@@ -5,3 +5,6 @@ __pycache__/
 key
 wa.db*
 msgstore.db*
+
+# ADB Keys for Docker image building
+adbkey*

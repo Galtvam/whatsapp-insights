@@ -6,6 +6,7 @@ import logging
 import argparse
 import tempfile
 import requests
+import subprocess
 
 from PIL import Image
 
@@ -26,8 +27,11 @@ from libs.whatsapp_web import WhatsAppWeb
 from libs.chart_race import create_chart_race_video
 from libs.insighters_image import create_insights_image
 
+CHROMEDRIVER_BIN = 'chromedriver.exe' if os.name == 'nt' else 'chromedriver'
+
 ANDROID_HOME = os.environ.get('ANDROID_HOME')
 SDK_MANAGER = os.environ.get('SDK_MANAGER')
+CHROMEDRIVER = os.environ.get('CHROMEDRIVER', f'./{CHROMEDRIVER_BIN}')
 
 INSIGHTERS = {
     'LongestAudioInsighter': LongestAudioInsighter,
@@ -46,7 +50,6 @@ DEFAULT_PROFILE_IMAGE = os.path.join(os.path.dirname(__file__), 'images', 'profi
 LOCALE_DIR = os.path.join(os.path.dirname(__file__), 'locale')
 
 RANK_DATE_FORMAT = '%d %b %Y %H:%M:%S'
-CHROMEDRIVER_BIN = 'chromedriver.exe' if os.name == 'nt' else 'chromedriver'
 
 # WhatsApp Messenger 2.21.16.20 (x86_64) (Android 4.1+)
 WHATSAPP_APK_URL = 'https://www.apkmirror.com/wp-content/themes/APKMirror/download.php?id=2554798'
@@ -454,7 +457,11 @@ def generate_rank_file(msg_store, locale, contacts, insighters, output):
 
 
 if __name__ == '__main__':
-    default_device_serial = next(iter(utils.get_adb_serials(include_emulators=False)), None)
+    if utils.is_adb_installed():
+        default_device_serial = next(iter(utils.get_adb_serials(include_emulators=False)), None)
+    else:
+        logging.warning('ADB is not installed. You\'ll not be able to extract key without it.')
+        default_device_serial = None
 
     parser = argparse.ArgumentParser(description='Collect insights from WhatsApp',
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -489,7 +496,7 @@ if __name__ == '__main__':
     profile_images_parser.add_argument('--msg-store', dest='msg_store', default='msgstore.db', help='WhatsApp database file path')
     profile_images_parser.add_argument('--output', dest='output', default='./profile_pictures', 
                                        help='Directory where to save the contacts profile images')
-    profile_images_parser.add_argument('--chromedriver', dest='chromedriver', default=f'./{CHROMEDRIVER_BIN}', help='Chrome Driver path')
+    profile_images_parser.add_argument('--chromedriver', dest='chromedriver', default=CHROMEDRIVER, help='Chrome Driver path')
 
     image_parser = subparsers.add_parser('generate-image', help='Generate Insights image',
                                          formatter_class=argparse.ArgumentDefaultsHelpFormatter)

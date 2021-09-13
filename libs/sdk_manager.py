@@ -62,7 +62,7 @@ class SDKManager:
         return self._get_all_packages()
     
     def install_package(self, *packages, timeout=2400):
-        process = subprocess.Popen([self.SDK_MANAGER, '--install'] + list(packages), shell=True)
+        process = subprocess.Popen([self.SDK_MANAGER, '--install'] + list(packages))
         process.wait(timeout)
         if process.poll() != 0:
             raise InstallPackageError
@@ -92,7 +92,7 @@ class SDKManager:
 
     def _get_all_packages(self, timeout=30):
         logging.info('Listing packages in SDK Manager')
-        process = subprocess.Popen([self.SDK_MANAGER, '--list'], text=True, stdout=subprocess.PIPE, shell=True)
+        process = subprocess.Popen([self.SDK_MANAGER, '--list'], text=True, stdout=subprocess.PIPE)
         out, _ = process.communicate(timeout)
         if process.poll() != 0:
             raise ListSDKPackagesError

@@ -230,6 +230,7 @@ def open_whatsapp_backup_activity(android):
     android.start_activity('com.whatsapp/.backup.google.SettingsGoogleDrive')
 
 def backup_whatsapp_messages(android, timeout=600):
+    force_stop_whatsapp(android)
     open_whatsapp(android)
     android.ui.waitfor_element(contentDesc='More options').tap()
     android.ui.waitfor_element(text='Settings').tap()

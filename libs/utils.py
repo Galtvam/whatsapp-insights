@@ -12,8 +12,16 @@ from Crypto.Cipher import AES
 from difflib import SequenceMatcher
 
 
+def is_adb_installed():
+    try:
+        subprocess.check_output(['adb', 'devices'])
+        return True
+    except FileNotFoundError:
+        return False
+
+
 def get_adb_serials(include_emulators=True):
-    out = subprocess.check_output(['adb', 'devices'], shell=True, text=True).strip('\r\n').strip('\n')
+    out = subprocess.check_output(['adb', 'devices'], text=True).strip('\r\n').strip('\n')
     devices = [d for d in re.findall(r'(\S+)\tdevice', out) if include_emulators or not d.startswith('emulator-')]
     return devices
 
